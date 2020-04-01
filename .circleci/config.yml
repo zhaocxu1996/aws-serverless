@@ -6,48 +6,43 @@ jobs:
 
     steps:
       - checkout
+
       - run:
           name: Install packages
           command: sudo apt-get update && sudo apt-get install wget zip unzip python2.7 python-pip -y
+
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install gradle -y
+
       - run:
           name: Install awscli
           command: |
             sudo pip install awscli
             aws configure set default.region us-east-1
       - run:
-          name: Build WAR
+          name: Zip Artifact
           command: |
-            mvn --version
-            mvn clean package
+            echo "current build number is ${CIRCLE_BUILD_NUM}"
+            pwd
+            gradle build
+            cd build
             pwd
             ls -al
-            mv target/lambda.jar ./lambda.jar
-            ls -al target
-      - run:
-          name: Build Deployment Artifact
-          command: |
-            mkdir codedeploy_artifact
-            zip -r lambda.zip lambda.jar
-            pwd
-            ls -al
-            mv lambda.zip codedeploy_artifact/
-            ls -al
-            pwd
-            cd codedeploy_artifact
-            pwd
+            mv lambda-0.0.1.zip lambda.zip
             ls -al
             cd ..
             pwd
-            ls -al
       - run:
-          name: Copy Artifact to S3
+          name: Upload Artifact to S3
           command: |
-            aws s3 cp --recursive codedeploy_artifact s3://${S3_CODEDEPLOY_BUCKET}
+            cd build
+            aws s3 sync distributions s3://${S3_CODEDEPLOY_BUCKET}
       - run:
           name: Make CodeDeploy API call
           command: |
             aws lambda update-function-code\
-                 --region us-east-1\
+                 --region ${AWS_REGION}\
                  --function-name demo\
                  --s3-bucket=${S3_CODEDEPLOY_BUCKET}\
-                 --s3-key lambda.zip
+                 --s3-key lambda-0.0.1.zip
