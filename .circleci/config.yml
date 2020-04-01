@@ -44,7 +44,7 @@ jobs:
           name: Make CodeDeploy API call
           command: |
             aws lambda update-function-code\
-                 --region ${AWS_REGION}\
+                 --region us-east-1\
                  --function-name demo\
                  --s3-bucket=${S3_CODEDEPLOY_BUCKET}\
-                 --s3-key lambda-0.0.1.zip
+                 --s3-key lambda.zip
