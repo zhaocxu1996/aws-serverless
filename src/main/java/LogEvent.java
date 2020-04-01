@@ -30,6 +30,7 @@ public class LogEvent implements RequestHandler<SNSEvent, Object> {
         String region = Regions.US_EAST_1.toString();
         String route53 = "dev.zhaocxu.me";
         String email = message[0];
+        String url = "https://" + route53 + "/v1/bill/";
 
         long ttl = System.currentTimeMillis();
 
@@ -40,13 +41,14 @@ public class LogEvent implements RequestHandler<SNSEvent, Object> {
         Item item = table.getItem("id", email);
         if (item == null || item.getNumber("TTl").longValue() < ttl - 1800000) {
             table.putItem(new Item().withPrimaryKey("id", email).withString("Token", UUID.randomUUID().toString()).withNumber("TTl", ttl));
-            StringBuffer billids = new StringBuffer();
+            StringBuffer links = new StringBuffer();
             for (String s : Arrays.copyOfRange(message, 1, message.length)) {
-                billids.append(s+"<br>");
+                links.append("<a href='" + url + s + "'>" + s + "</a><br>");
+//                links.append(s+"<br>");
             }
             final String from = "assignment10@" + route53;
             final String subject = "list of bill id";
-            final String htmlBody = "your bill ids: <br>" + billids;
+            final String htmlBody = "your bill ids: <br>" + links;
 
             AmazonSimpleEmailService SESClient = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(region).build();
             SendEmailRequest sendEmailRequest = new SendEmailRequest()
