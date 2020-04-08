@@ -28,6 +28,8 @@ jobs:
             gradle build
             cd build
             pwd
+            cd distributions
+            pwd
             ls -al
             mv lambda-0.0.1.zip lambda.zip
             ls -al
