@@ -49,5 +49,5 @@ jobs:
             aws lambda update-function-code\
                  --region us-east-1\
                  --function-name demo\
-                 --s3-bucket=${CODE_DEPLOY_S3_BUCKET}\
+                 --s3-bucket=${S3_CODEDEPLOY_BUCKET}\
                  --s3-key lambda.zip
