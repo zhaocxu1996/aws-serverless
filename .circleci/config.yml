@@ -1,0 +1,53 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    steps:
+      - checkout
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip python2.7 python-pip -y
+      - run:
+          name: Install awscli
+          command: |
+            sudo pip install awscli
+            aws configure set default.region us-east-1
+      - run:
+          name: Build WAR
+          command: |
+            mvn --version
+            mvn clean package
+            pwd
+            ls -al
+            mv target/lambda.jar ./lambda.jar
+            ls -al target
+      - run:
+          name: Build Deployment Artifact
+          command: |
+            mkdir codedeploy_artifact
+            zip -r lambda.zip lambda.jar
+            pwd
+            ls -al
+            mv lambda.zip codedeploy_artifact/
+            ls -al
+            pwd
+            cd codedeploy_artifact
+            pwd
+            ls -al
+            cd ..
+            pwd
+            ls -al
+      - run:
+          name: Copy Artifact to S3
+          command: |
+            aws s3 cp --recursive codedeploy_artifact s3://${S3_CODEDEPLOY_BUCKET}
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            aws lambda update-function-code\
+                 --region us-east-1\
+                 --function-name demo\
+                 --s3-bucket=${CODE_DEPLOY_S3_BUCKET}\
+                 --s3-key lambda.zip
