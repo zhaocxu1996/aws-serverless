@@ -1,13 +1,13 @@
 # serverless
 
-Lambda function will be invoked by the SNS notification. Lambda function is responsible for sending email to the user.
+## Prerequisites
 
-As a user, I should be able to only have 1 request token active in database (DynamoDB) at a time.
+Java 8, Maven installed.
 
-As a user, I expect the request information to be stored in DynamoDB with TTL of 60 minutes.
+## Build and Deploy instructions
 
-As a user, I expect the request token to expire after 60 minutes if it is not used by then.
+run mvn clean package to build the jar file and zip it.
 
-As a user, I expect the to receive links to all the bills that are due within X days in an email.
+then use aws s3 cp --recursive command copy it to the s3 bucket.
 
-As a user, if I make multiple requests when there is a active token in the database, I should only receive 1 email.
+finally, use aws lambda api.
