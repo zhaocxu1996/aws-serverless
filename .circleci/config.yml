@@ -39,12 +39,12 @@ jobs:
           name: Upload Artifact to S3
           command: |
             cd build
-            aws s3 sync distributions s3://${S3_CODEDEPLOY_BUCKET}
+            aws s3 sync distributions s3://${PROD_CODEDEPLOY_BUCKET}
       - run:
           name: Make CodeDeploy API call
           command: |
             aws lambda update-function-code\
                  --region us-east-1\
                  --function-name demo\
-                 --s3-bucket=${S3_CODEDEPLOY_BUCKET}\
+                 --s3-bucket=${PROD_CODEDEPLOY_BUCKET}\
                  --s3-key lambda.zip
