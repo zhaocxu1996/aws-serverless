@@ -25,7 +25,7 @@ public class LogEvent implements RequestHandler<SNSEvent, Object> {
 
         System.out.println(request.getRecords().get(0).getSNS().getMessage());
         String region = "us-east-1";
-        String route53 = "dev.zhaocxu.me";
+        String route53 = "prod.zhaocxu.me";
         String url = "https://" + route53 + "/v1/bill/";
         String email = message[0];
 
@@ -50,7 +50,7 @@ public class LogEvent implements RequestHandler<SNSEvent, Object> {
             for (String s : Arrays.copyOfRange(message, 1, message.length))
                 links.append("<a href='" + url + s + "'>" + s + "</a><br>");
 
-            final String FROM = "assignment10@" + route53;
+            final String FROM = "assignment11@" + route53;
             final String SUBJECT = "recipes link";
             final String HTMLBODY = "your recipes: <br>" + links;
             try {
